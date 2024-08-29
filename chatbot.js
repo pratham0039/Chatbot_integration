@@ -1,49 +1,91 @@
-(function() {
-  // Create the chatbot button
-  var chatButton = document.createElement('div');
-  chatButton.innerHTML = '💬';
-  chatButton.style.position = 'fixed';
-  chatButton.style.bottom = '20px';
-  chatButton.style.right = '20px';
-  chatButton.style.width = '60px';
-  chatButton.style.height = '60px';
-  chatButton.style.backgroundColor = '#ff5a5f';
-  chatButton.style.borderRadius = '50%';
-  chatButton.style.display = 'flex';
-  chatButton.style.justifyContent = 'center';
-  chatButton.style.alignItems = 'center';
-  chatButton.style.boxShadow = '0px 2px 10px rgba(0, 0, 0, 0.2)';
-  chatButton.style.color = 'white';
-  chatButton.style.fontSize = '24px';
-  chatButton.style.cursor = 'pointer';
-  chatButton.style.zIndex = '1000';
-  chatButton.onclick = toggleIframe;
-  document.body.appendChild(chatButton);
+import React from 'react';
+import { View, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
+import { WebView } from 'react-native-webview';
 
-  // Create the iframe container
-  var iframeContainer = document.createElement('div');
-  iframeContainer.style.position = 'fixed';
-  iframeContainer.style.bottom = '90px';
-  iframeContainer.style.right = '20px';
-  iframeContainer.style.width = '350px';
-  iframeContainer.style.height = '500px';
-  iframeContainer.style.backgroundColor = 'white';
-  iframeContainer.style.border = '1px solid #ccc';
-  iframeContainer.style.boxShadow = '0px 2px 10px rgba(0, 0, 0, 0.2)';
-  iframeContainer.style.zIndex = '1000';
-  iframeContainer.style.display = 'none';
-  document.body.appendChild(iframeContainer);
+const Chatbot = () => {
+  const [iframeVisible, setIframeVisible] = React.useState(false);
 
-  // Create the iframe element
-  var iframe = document.createElement('iframe');
-  iframe.src = 'https://axi-v03-bot-hdqdtzwacamfa6bbwpp8d7.streamlit.app/?embedded=true'; // Hosted chatbot URL
-  iframe.style.height = '100%';
-  iframe.style.width = '100%';
-  iframe.style.border = 'none';
-  iframeContainer.appendChild(iframe);
+  const toggleIframe = () => {
+    setIframeVisible(!iframeVisible);
+  };
 
-  // Function to toggle iframe visibility
-  function toggleIframe() {
-    iframeContainer.style.display = (iframeContainer.style.display === 'none' || iframeContainer.style.display === '') ? 'block' : 'none';
-  }
-})();
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.fab} onPress={toggleIframe}>
+        <Text style={styles.fabIcon}>💬</Text>
+      </TouchableOpacity>
+      {iframeVisible && (
+        <View style={styles.iframeContainer}>
+          <TouchableOpacity style={styles.closeButton} onPress={toggleIframe}>
+            <Text style={styles.closeButtonText}>✖</Text>
+          </TouchableOpacity>
+          <WebView
+            source={{ uri: 'https://your-external-chatbot-url' }}
+            style={styles.iframe}
+          />
+        </View>
+      )}
+    </View>
+  );
+};
+
+const { width, height } = Dimensions.get('window');
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    width: 60,
+    height: 60,
+    backgroundColor: '#ff5a5f',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 2, height: 2 },
+    shadowRadius: 5,
+  },
+  fabIcon: {
+    color: 'white',
+    fontSize: 24,
+  },
+  iframeContainer: {
+    position: 'absolute',
+    bottom: 90,
+    right: 20,
+    width: width * 0.9,
+    height: height * 0.7,
+    maxHeight: 500,
+    backgroundColor: 'white',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 10,
+    overflow: 'hidden',
+    elevation: 5, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 2, height: 2 },
+    shadowRadius: 5,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1,
+  },
+  closeButtonText: {
+    fontSize: 18,
+    color: '#999',
+  },
+  iframe: {
+    flex: 1,
+  },
+});
+
+export default Chatbot;
